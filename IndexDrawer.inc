@@ -49,6 +49,7 @@ enum KEY_LIST
 }
 
 static Text:iTextDraw[MAX_IDRAWS] = { Text:NULL };
+static iDrawTitle[MAX_IDRAWS][64];
 static iDrawActive[MAX_SLOTS] = { NULL };
 static iCancelKey[MAX_IDRAWS] = { KEY_FIRE };
 static iDataSheet[MAX_IDRAWS][MAX_IDRAW_OPTIONS][KEY_LIST];
@@ -57,7 +58,7 @@ static iDrawColor[MAX_IDRAWS][3][12];
 public IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, backcolor, align, font, outline, titlecolor[], enumcolor[], textcolor[])
 {
 	new xT[64], Text:tmpTD, idr;
-	format(xT, sizeof xT, "%s%s~n~", titlecolor, title);
+	format(xT, sizeof xT, "%s%s", titlecolor, title);
 	tmpTD = TextDrawCreate(x, y, xT);
 	TextDrawTextSize(tmpTD, xsize, ysize);
 	TextDrawSetProportional(tmpTD, 1);
@@ -77,6 +78,7 @@ public IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, back
 		}
 	    if (iTextDraw[i] == Text:NULL)
 	   	{
+	   	    format(iDrawTitle[i], strlen(iDrawTitle[i]), title);
 	   		iTextDraw[i] = tmpTD;
 	   		idr = i;
 	   	}
@@ -106,13 +108,30 @@ public IndexDrawAddOption(idraw, keytitle[], keystate)
             return -1;
         }
 	for (new i = 0; i < MAX_IDRAW_OPTIONS; i++)
-		if (iTextDraw[idraw] == Text:NULL)
+		if (iDataSheet[idraw][i][keychar] == NULL)
 		{
 		    iDataSheet[idraw][i][keychar] = keystate;
 		    format(iDataSheet[idraw][i][keyname], strlen(iDataSheet[idraw][i][keyname]), keytitle);
+		    // xSet
+		    new xStr[256];
+		    format(xStr, sizeof xStr, "%s%s~n~", iDrawColor[idraw][0], iDrawTitle[idraw]);
+			for (new h = 0; h < MAX_IDRAW_OPTIONS; h++)
+			{
+			    if (iDataSheet[idraw][h][keychar] != NULL)
+			    {
+			    	strcat(xStr, iDrawColor[idraw][1]);
+			    	strcat(xStr, iDataSheet[idraw][h][keychar], 1);
+			    	strcat(xStr, ". ");
+			    	strcat(xStr, iDrawColor[idraw][2]);
+			    	strcat(xStr, iDataSheet[idraw][h][keyname]);
+			    	strcat(xStr, "~n~");
+			    }
+			}
+		    TextDrawSetString(iTextDraw[idraw], xStr);
+		    // ----
 		    return i;
 		}
-    printf("IndexDrawer: iDraw Options Overflow for iDraw #%i. Try Increasing MAX_IDRAW_OPTIONS.", idraw);
+    printf("IndexDrawer: iDraw Options Overflow for iDraw #%i. Maximum is 20 Per iDraw.", idraw);
     return -1;
 }
 
@@ -120,6 +139,23 @@ public IndexDrawRemoveOption(idraw, index)
 {
 	iDataSheet[idraw][index][keychar] = NULL;
 	format(iDataSheet[idraw][index][keyname], strlen(iDataSheet[idraw][index][keyname]), "");
+	// xSet
+    new xStr[256];
+    format(xStr, sizeof xStr, "%s%s~n~", iDrawColor[idraw][0], iDrawTitle[idraw]);
+	for (new h = 0; h < MAX_IDRAW_OPTIONS; h++)
+	{
+	    if (iDataSheet[idraw][h][keychar] != NULL)
+	    {
+	    	strcat(xStr, iDrawColor[idraw][1]);
+	    	strcat(xStr, iDataSheet[idraw][h][keychar], 1);
+	    	strcat(xStr, ". ");
+	    	strcat(xStr, iDrawColor[idraw][2]);
+	    	strcat(xStr, iDataSheet[idraw][h][keyname]);
+	    	strcat(xStr, "~n~");
+	    }
+	}
+    TextDrawSetString(iTextDraw[idraw], xStr);
+    // ----
 }
 
 public IndexDrawShowForPlayer(playerid, idraw)
@@ -146,6 +182,7 @@ public IndexDrawDispose(idraw)
 	    format(iDataSheet[idraw][i][keyname], strlen(iDataSheet[idraw][i][keyname]), "");
 	    iDataSheet[idraw][i][keychar] = NULL;
 	}
+	format(iDrawTitle[idraw], strlen(iDrawTitle[idraw]), "");
 	iCancelKey[idraw] = KEY_FIRE;
 	TextDrawDestroy(iTextDraw[idraw]);
 	iTextDraw[idraw] = Text:NULL;
