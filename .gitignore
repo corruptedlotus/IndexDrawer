@@ -9,6 +9,7 @@
 *.a
 *.la
 *.lo
+*.inc
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -36,7 +37,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
