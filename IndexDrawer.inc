@@ -30,18 +30,6 @@
 forward OnIndexDrawCanceled(playerid, idraw);
 forward OnIndexDrawSelected(playerid, idraw, index, keystate, keytitle[]);
 
-// Methods
-forward IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, backcolor, align, font, outline, titlecolor[], enumcolor[], textcolor[]); // Initialize an IndexDraw
-forward IndexDrawLetterSize(idraw, Float:x, Float:y); // Set The Letter Size of an IndexDraw's Text
-forward IndexDrawCancelKey(idraw, keystate); // Set The Ignore Key for an IndexDraw
-forward IndexDrawAddOption(idraw, keytitle[], keystate); // Add a Selection Index to an TextDraw
-forward IndexDrawRemoveOption(idraw, index); // Remove a Selection Index from an IndexDraw
-forward IndexDrawShowForPlayer(playerid, idraw); // Show an IndexDraw to a Player
-forward IndexDrawHideForPlayer(playerid, idraw); // Hide an IndexDraw from a Player
-forward IndexDrawDispose(idraw); // Destroy an IndexDraw and Release all Memroy Resources
-forward GetPlayerActiveIndexDraw(playerid); // Get a Player's Currently Active IndexDraw
-forward IsPlayerIndexDrawActive(playerid, idraw); // Checks if an IndexDraw is Active for a Specific Player
-
 enum KEY_LIST
 {
 	keychar,
@@ -55,7 +43,7 @@ static iCancelKey[MAX_IDRAWS] = { KEY_FIRE };
 static iDataSheet[MAX_IDRAWS][MAX_IDRAW_OPTIONS][KEY_LIST];
 static iDrawColor[MAX_IDRAWS][3][12];
 
-public IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, backcolor, align, font, outline, titlecolor[], enumcolor[], textcolor[])
+stock IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, backcolor, align, font, outline, titlecolor[], enumcolor[], textcolor[])
 {
 	new xT[64], Text:tmpTD, idr;
 	format(xT, sizeof xT, "%s%s", titlecolor, title);
@@ -89,17 +77,17 @@ public IndexDrawCreate(Float:x, Float:y, title[], Float:xsize, Float:ysize, back
 	return idr;
 }
 
-public IndexDrawLetterSize(idraw, Float:x, Float:y)
+stock IndexDrawLetterSize(idraw, Float:x, Float:y)
 {
 	TextDrawLetterSize(iTextDraw[idraw], x, y);
 }
 
-public IndexDrawCancelKey(idraw, keystate)
+stock IndexDrawCancelKey(idraw, keystate)
 {
 	iCancelKey[idraw] = keystate;
 }
 
-public IndexDrawAddOption(idraw, keytitle[], keystate)
+stock IndexDrawAddOption(idraw, keytitle[], keystate)
 {
     for (new i = 0; i < MAX_IDRAW_OPTIONS; i++)
         if (iDataSheet[idraw][i][keychar] == keystate)
@@ -135,7 +123,7 @@ public IndexDrawAddOption(idraw, keytitle[], keystate)
     return -1;
 }
 
-public IndexDrawRemoveOption(idraw, index)
+stock IndexDrawRemoveOption(idraw, index)
 {
 	iDataSheet[idraw][index][keychar] = NULL;
 	format(iDataSheet[idraw][index][keyname], strlen(iDataSheet[idraw][index][keyname]), "");
@@ -158,19 +146,19 @@ public IndexDrawRemoveOption(idraw, index)
     // ----
 }
 
-public IndexDrawShowForPlayer(playerid, idraw)
+stock IndexDrawShowForPlayer(playerid, idraw)
 {
 	TextDrawShowForPlayer(playerid, Text:iTextDraw[idraw]);
 	iDrawActive[playerid] = idraw;
 }
 
-public IndexDrawHideForPlayer(playerid, idraw)
+stock IndexDrawHideForPlayer(playerid, idraw)
 {
     TextDrawHideForPlayer(playerid, Text:iTextDraw[idraw]);
 	iDrawActive[playerid] = NULL;
 }
 
-public IndexDrawDispose(idraw)
+stock IndexDrawDispose(idraw)
 {
 	for (new i = 0; i < MAX_SLOTS; i++)
 	    if (iDrawActive[i] == idraw)
@@ -189,12 +177,12 @@ public IndexDrawDispose(idraw)
 	return 1;
 }
 
-public GetPlayerActiveIndexDraw(playerid)
+stock GetPlayerActiveIndexDraw(playerid)
 {
 	return iDrawActive[playerid];
 }
 
-public IsPlayerIndexDrawActive(playerid, idraw)
+stock IsPlayerIndexDrawActive(playerid, idraw)
 {
 	return iDrawActive[playerid] == idraw;
 }
