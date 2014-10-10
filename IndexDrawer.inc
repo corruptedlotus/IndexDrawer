@@ -28,7 +28,7 @@
 
 // Callbacks
 forward OnIndexDrawCanceled(playerid, idraw);
-forward OnIndexDrawSelected(playerid, idraw, index, keystate, keytitle[]);
+forward OnIndexDrawSelected(playerid, idraw, index, keystate[], keytitle[]);
 
 enum KEY_LIST
 {
